@@ -17,6 +17,7 @@ import { Picker } from "@react-native-picker/picker";
 const db = firebase.firestore(firebaseApp);
 
 const EditPresupuesto = (props) => {
+  /* creamos las variables para almcenar la informacion  */
   const initialState = {
     id: "",
     correo: "",
@@ -47,6 +48,7 @@ const EditPresupuesto = (props) => {
     setUser({ ...user, [name]: value });
   };
 
+  /* metodo actualizar */
   const updateUser = async () => {
     const dbRef = db.collection("comentarios").doc(user.id);
     await dbRef.set({
@@ -58,6 +60,7 @@ const EditPresupuesto = (props) => {
     props.navigation.navigate("ListaComemtarios");
   };
 
+  /* metodo eliminar */
   const deleteUser = async () => {
     const dbRef = db.collection("comentarios").doc(props.route.params.userId);
     await dbRef.delete();
@@ -87,23 +90,27 @@ const EditPresupuesto = (props) => {
 
   return (
     <ScrollView style={Styles.container}>
-      <Text>Datos</Text>
-      <View style={Styles.inputGroup}>
-        <Text>{user.correo}</Text>
+      <Text style={Styles.titulo}>Formulario</Text>
+      <View>
+        <Text style={Styles.user}>Usuario:</Text>
       </View>
       <View style={Styles.inputGroup}>
-      <TextInput
+        <Text style={Styles.user}>{user.correo}</Text>
+      </View>
+      <View>
+        <Text style={Styles.user}>Comentario:</Text>
+      </View>
+      <View style={Styles.inputGroup}>
+        <TextInput
+          multiline
           placeholder="Comentario"
           value={user.comentario}
+          style={Styles.comentario}
           onChangeText={(value) => handleChangeText("comentario", value)}
         />
       </View>
       <View style={Styles.espacio}>
-        <Button
-          color="#2A88EE"
-          title="Editar"
-          onPress={() => updateUser()}
-        />
+        <Button color="#2A88EE" title="Editar" onPress={() => updateUser()} />
       </View>
       <View>
         <Button
@@ -130,6 +137,19 @@ const Styles = StyleSheet.create({
     marginBottom: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#cccccc",
+  },
+  titulo: {
+    fontSize: 25,
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  user: {
+    fontSize: 20,
+  },
+  comentario: {
+    fontSize: 20,
+    marginTop: 15,
+    marginBottom: 15,
   },
 });
 

@@ -1,5 +1,5 @@
 import firebase from "firebase/app";
-
+/* configuracion y conexion a la base de datos */
 const firebaseConfig = {
   apiKey: "AIzaSyDE_x53FAI6EtqCNMwpLIPzCjocUf-qIV4",
   authDomain: "integradora-65365.firebaseapp.com",

@@ -40,6 +40,7 @@ export default function UserLogged() {
         setRealoadUserInfo={setRealoadUserInfo}
       />
       <View style={styles.espacio}>
+        {/* boton para cerrar la sesion de firebase */}
         <Button
           title="Cerrar sesión"
           onPress={() => firebase.auth().signOut()}

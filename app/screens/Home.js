@@ -10,9 +10,12 @@ import {
 } from "react-native";
 
 function Favoritos() {
+  console.disableYellowBox = true;
   return (
+    /* es la vista principal de la aplicacion */
     <>
       <ScrollView>
+        {/* scroll con las imagenes de la vista home */}
         <ScrollView>
           <View style={{ flexDirection: "row" }}>
             <Image
@@ -25,6 +28,7 @@ function Favoritos() {
             <Text style={styles.titulo}>Algunos de nuestros proyectos.</Text>
             <ScrollView horizontal>
               <View>
+                {/* se utiliza el TouchableOpacity para que las imagenes nos puedan redirigir a otra vista fuera del navegador */}
                 <TouchableOpacity
                   onPress={() =>
                     Linking.openURL(

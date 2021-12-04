@@ -4,12 +4,12 @@ import { Input, Icon, Button } from "react-native-elements";
 import { validarEmail } from "../../utils/validaciones";
 import { size, isEmpty } from "lodash";
 //importamos la dependencia a firebase
-import firebase from 'firebase/app';
-import {useNavigation} from "@react-navigation/native"
+import firebase from "firebase/app";
+import { useNavigation } from "@react-navigation/native";
 
 export default function FormRegistro(toast) {
   //declaramos el objeto que manipulará el toast
-  const navigation =useNavigation();
+  const navigation = useNavigation();
   const { toastRef } = toast;
   const [mostrar, setMostrar] = useState(false);
   const [mostrar2, setMostrar2] = useState(false);
@@ -61,11 +61,10 @@ export default function FormRegistro(toast) {
           navigation.navigate("cuentas");
         })
         .catch(() => {
-          toastRef.current.show("El correo electrónico ya está en uso, intente con un correo diferente")
+          toastRef.current.show(
+            "El correo electrónico ya está en uso, intente con un correo diferente"
+          );
         });
-      /*  toastRef.current.show("Envio correcto de los datos");
-      console.log("ok");
-      console.log(datos); */
     }
   };
   /*Método que se activará al escribir en los campos

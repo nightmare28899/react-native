@@ -3,11 +3,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Icon } from "react-native-elements";
 
-import RutasSucursales from "./RutasSucursales";
 import RutasComentarios from "../screens/Comentarios";
-import Favoritos from "../screens/Favoritos";
-import TopSucursales from "./RutasTop";
-import Busquedas from "../screens/Busquedas";
+import Home from "../screens/Home";
+import Presupuesto from "../screens/Presupuesto";
 import RutasCuentas from "./RutasCuenta";
 
 const Tab = createBottomTabNavigator();
@@ -31,27 +29,20 @@ export default function Navegacion() {
           tabBarIcon: ({ color }) => opciones(route, color),
         })}
       >
-        <Tab.Screen name="Home" component={Favoritos}  />
-        {/* <Tab.Screen
-          name="sucursales"
-          component={RutasSucursales}
-          options={{ headerShown: false }}
-        /> */}
+        <Tab.Screen name="Home" component={Home} />
+        {/* rutas que nos lleva a la vista de comentarios */}
         <Tab.Screen
           name="Comments"
           component={RutasComentarios}
           options={{ headerShown: false }}
         />
-         <Tab.Screen
+        {/* rutas que nos lleva a la vista de presupuesto */}
+        <Tab.Screen
           name="Budgets"
-          component={Busquedas}
+          component={Presupuesto}
           options={{ headerShown: false }}
         />
-        {/* <Tab.Screen
-          name="top"
-          component={TopSucursales}
-          options={{ headerShown: false }}
-        /> */}
+        {/* rutas que nos lleva a la vista de cuentas */}
         <Tab.Screen
           name="User"
           component={RutasCuentas}
@@ -70,18 +61,11 @@ function opciones(ruta, color) {
   let iconName;
   //De acuerdo al nombre de cada ruta se signa un icono
   switch (ruta.name) {
-    case "sucursales":
-      //para buscar iconos https://materialdesignicons.com/
-      iconName = "favorite";
-      break;
-    case "Comments":
-      iconName = "comment";
-      break;
     case "Home":
       iconName = "home";
       break;
-    case "top":
-      iconName = "star";
+    case "Comments":
+      iconName = "comment";
       break;
     case "Budgets":
       iconName = "book";

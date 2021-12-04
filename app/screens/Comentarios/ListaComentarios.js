@@ -61,6 +61,7 @@ const Presupuesto = (props) => {
               rounded
             />
             <ListItem.Content>
+              {/* aqui accedemos a nuestras variables a traves de user que es la variable que pasamos por useState */}
               <ListItem.Title>{user.correo}</ListItem.Title>
               <ListItem.Subtitle>{user.comentario}</ListItem.Subtitle>
               <ListItem.Subtitle>{user.creado.substring(0, 24)}</ListItem.Subtitle>

@@ -14,6 +14,7 @@ export default function RutasCuenta() {
   //por default al importar nuestro archivo
   return (
     <Stack.Navigator>
+      {/* son las diferentes pantallas a las que nos pueden redirigir */}
       <Stack.Screen
         name="cuentas"
         component={Cuentas}

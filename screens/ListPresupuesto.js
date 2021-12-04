@@ -14,14 +14,18 @@ const Presupuesto = (props) => {
     db.collection("presupuesto").onSnapshot((querySnapShot) => {
       const users = [];
       querySnapShot.docs.forEach((doc) => {
-        const { nombre, correo, mensaje, navbar, encabezado, total, creado } = doc.data();
+        const { nombre, correo, navegacion, encabezado, body, footer, basedatos, framework, hosting, total, creado } = doc.data();
         users.push({
           id: doc.id,
           nombre,
           correo,
-          mensaje,
-          navbar,
+          navegacion,
           encabezado,
+          body,
+          footer,
+          basedatos,
+          framework,
+          hosting,
           total,
           creado,
         });
@@ -67,9 +71,13 @@ const Presupuesto = (props) => {
             <ListItem.Content>
               <ListItem.Title>{user.nombre}</ListItem.Title>
               <ListItem.Subtitle>{user.correo}</ListItem.Subtitle>
-              <ListItem.Subtitle>{user.mensaje}</ListItem.Subtitle>
-              <ListItem.Subtitle><Text>Costo de Navbar: </Text> {user.navbar}</ListItem.Subtitle>
+              <ListItem.Subtitle><Text>Costo de navegacion: </Text> {user.navegacion}</ListItem.Subtitle>
               <ListItem.Subtitle><Text>Costo de encabezado: </Text> {user.encabezado}</ListItem.Subtitle>
+              <ListItem.Subtitle><Text>Costo de body: </Text> {user.body}</ListItem.Subtitle>
+              <ListItem.Subtitle><Text>Costo de footer: </Text> {user.footer}</ListItem.Subtitle>
+              <ListItem.Subtitle><Text>Costo de base de datos: </Text> {user.basedatos}</ListItem.Subtitle>
+              <ListItem.Subtitle><Text>Costo de framework: </Text> {user.framework}</ListItem.Subtitle>
+              <ListItem.Subtitle><Text>Costo de hosting (por mes): </Text> {user.hosting}</ListItem.Subtitle>
               <ListItem.Subtitle><Text>Costo Total: </Text> {user.total}</ListItem.Subtitle>
               <ListItem.Subtitle>{user.creado.substring(0, 24)}</ListItem.Subtitle>
             </ListItem.Content>
