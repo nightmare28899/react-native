@@ -10,13 +10,12 @@ const db = firebase.firestore(firebaseApp);
 const Presupuesto = (props) => {
   const [users, setUsers] = useState([]);
   const [usuario, setUsuario] = useState(null);
+  const user = firebase.auth().currentUser;
   useEffect(() => {
     db.collection("presupuesto").onSnapshot((querySnapShot) => {
       const users = [];
       querySnapShot.docs.forEach((doc) => {
-        const { nombre, correo, navegacion, encabezado, body, footer, basedatos, framework, hosting, total, creado } = doc.data();
-        users.push({
-          id: doc.id,
+        const {
           nombre,
           correo,
           navegacion,
@@ -28,7 +27,23 @@ const Presupuesto = (props) => {
           hosting,
           total,
           creado,
-        });
+        } = doc.data();
+        if (user.email == correo) {
+          users.push({
+            id: doc.id,
+            nombre,
+            correo,
+            navegacion,
+            encabezado,
+            body,
+            footer,
+            basedatos,
+            framework,
+            hosting,
+            total,
+            creado,
+          });
+        }
       });
       setUsers(users);
     });
@@ -71,15 +86,33 @@ const Presupuesto = (props) => {
             <ListItem.Content>
               <ListItem.Title>{user.nombre}</ListItem.Title>
               <ListItem.Subtitle>{user.correo}</ListItem.Subtitle>
-              <ListItem.Subtitle><Text>Costo de navegacion: </Text> {user.navegacion}</ListItem.Subtitle>
-              <ListItem.Subtitle><Text>Costo de encabezado: </Text> {user.encabezado}</ListItem.Subtitle>
-              <ListItem.Subtitle><Text>Costo de body: </Text> {user.body}</ListItem.Subtitle>
-              <ListItem.Subtitle><Text>Costo de footer: </Text> {user.footer}</ListItem.Subtitle>
-              <ListItem.Subtitle><Text>Costo de base de datos: </Text> {user.basedatos}</ListItem.Subtitle>
-              <ListItem.Subtitle><Text>Costo de framework: </Text> {user.framework}</ListItem.Subtitle>
-              <ListItem.Subtitle><Text>Costo de hosting (por mes): </Text> {user.hosting}</ListItem.Subtitle>
-              <ListItem.Subtitle><Text>Costo Total: </Text> {user.total}</ListItem.Subtitle>
-              <ListItem.Subtitle>{user.creado.substring(0, 24)}</ListItem.Subtitle>
+              <ListItem.Subtitle>
+                <Text>Costo de navegacion: </Text> {user.navegacion}
+              </ListItem.Subtitle>
+              <ListItem.Subtitle>
+                <Text>Costo de encabezado: </Text> {user.encabezado}
+              </ListItem.Subtitle>
+              <ListItem.Subtitle>
+                <Text>Costo de body: </Text> {user.body}
+              </ListItem.Subtitle>
+              <ListItem.Subtitle>
+                <Text>Costo de footer: </Text> {user.footer}
+              </ListItem.Subtitle>
+              <ListItem.Subtitle>
+                <Text>Costo de base de datos: </Text> {user.basedatos}
+              </ListItem.Subtitle>
+              <ListItem.Subtitle>
+                <Text>Costo de framework: </Text> {user.framework}
+              </ListItem.Subtitle>
+              <ListItem.Subtitle>
+                <Text>Costo de hosting (por mes): </Text> {user.hosting}
+              </ListItem.Subtitle>
+              <ListItem.Subtitle>
+                <Text>Costo Total: </Text> {user.total}
+              </ListItem.Subtitle>
+              <ListItem.Subtitle>
+                {user.creado.substring(0, 24)}
+              </ListItem.Subtitle>
             </ListItem.Content>
           </ListItem>
         );
