@@ -78,6 +78,8 @@ const CreatePresupuesto = (props) => {
       Toast.show("No puedes dejar campos vacios");
     }
     else {
+      console.log(state);
+      console.log("Creado con exito");
       db.collection("presupuesto")
         .add({
           //enviamos los datos a almacenar, la colección se crea por si sola

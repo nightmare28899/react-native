@@ -28,6 +28,7 @@ const Presupuesto = (props) => {
           total,
           creado,
         } = doc.data();
+        /* la condicional es para que haga el filtrado de los presupuestos segun el usuario logueado (es lo que causa el bug sin sesion) */
         if (user.email == correo) {
           users.push({
             id: doc.id,
@@ -58,7 +59,7 @@ const Presupuesto = (props) => {
 
   return (
     <ScrollView style={styles.vista}>
-      {/*Colocaremos un botón de agregar nueva sucursal*/}
+      {/*Colocaremos un botón de agregar nuevo presupuesto*/}
       {usuario && (
         <Button
           title="Crea un presupuesto"

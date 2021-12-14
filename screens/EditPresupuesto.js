@@ -119,11 +119,14 @@ const EditPresupuesto = (props) => {
         user.setSelectedValue7,
       creado: user.creado,
     });
+    console.log(user);
+    console.log("Se actualizo correctamente");
     setUser(initialState);
     props.navigation.navigate("ListPresupuesto");
   };
 
   const deleteUser = async () => {
+    console.log("Se elimino correctamente");
     const dbRef = db.collection("presupuesto").doc(props.route.params.userId);
     await dbRef.delete();
     props.navigation.navigate("ListPresupuesto");

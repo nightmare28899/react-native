@@ -48,6 +48,7 @@ const CreatePresupuesto = (props) => {
         .then(() => {
           //si todo es correcto
           props.navigation.navigate("ListaComemtarios");
+          console.log("Se registro el comentario");
         })
         .catch(() => {
           //si no es posible almacenar

@@ -50,6 +50,7 @@ const EditPresupuesto = (props) => {
 
   /* metodo actualizar */
   const updateUser = async () => {
+    console.log(user);
     const dbRef = db.collection("comentarios").doc(user.id);
     await dbRef.set({
       correo: user.correo,
@@ -57,11 +58,13 @@ const EditPresupuesto = (props) => {
       creado: user.creado,
     });
     setUser(initialState);
-    props.navigation.navigate("ListaComemtarios");
+    console.log("Se edito el comentario");
+    props.navigation.navigate("ListaComemtarios"); 
   };
 
   /* metodo eliminar */
   const deleteUser = async () => {
+    console.log("Se elimino correctamente");
     const dbRef = db.collection("comentarios").doc(props.route.params.userId);
     await dbRef.delete();
     props.navigation.navigate("ListaComemtarios");

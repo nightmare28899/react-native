@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "ejemplo_react_native",
-    "slug": "ejemplo_react_native",
+    "name": "integradora",
+    "slug": "integradora",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,7 +24,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.nightmare28899.ejemplo_react_native"
+      "package": "com.nightmare28899.integradora"
     },
     "web": {
       "favicon": "./assets/favicon.png"
