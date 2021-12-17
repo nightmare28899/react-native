@@ -18,6 +18,7 @@ const db = firebase.firestore(firebaseApp);
 
 const EditPresupuesto = (props) => {
   /* creamos las variables para almcenar la informacion  */
+  const [usuario, setUsuario] = useState(null);
   const initialState = {
     id: "",
     correo: "",
@@ -39,6 +40,14 @@ const EditPresupuesto = (props) => {
     });
     setLoading(false);
   };
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((userInfo) => {
+      //si existe una sesión activa asignamos los datos de sesión al useState usuario
+      setUsuario(userInfo);
+    });
+  }, []);
+
 
   useEffect(() => {
     getUserById(props.route.params.userId);
@@ -112,9 +121,12 @@ const EditPresupuesto = (props) => {
           onChangeText={(value) => handleChangeText("comentario", value)}
         />
       </View>
+      {usuario && (
       <View style={Styles.espacio}>
         <Button color="#2A88EE" title="Editar" onPress={() => updateUser()} />
       </View>
+      )}
+      {usuario && (
       <View>
         <Button
           color="#FF0422"
@@ -122,6 +134,7 @@ const EditPresupuesto = (props) => {
           onPress={() => openConfirmationAlert()}
         />
       </View>
+      )}
     </ScrollView>
   );
 };
