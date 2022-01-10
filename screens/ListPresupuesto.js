@@ -1,179 +1,254 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, Button, ScrollView } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  Alert,
+  Pressable,
+  Image,
+  Modal,
+} from "react-native";
 import { firebaseApp } from "../app/utils/firebase";
 import firebase from "firebase/app";
 import "firebase/firestore";
-import { ListItem, Avatar, Icon } from "react-native-elements";
+import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Header from "./components/Header";
+import NuevoPresupuesto from "./components/NuevoPresupuesto";
+import ControlPresupuesto from "./components/ControlPresupuesto";
+import FormularioGasto from "./components/FormularioGasto";
+import ListadoGastos from "./components/ListadoGastos";
+import Filtro from "./components/Filtro";
+import { generarId } from "./helpers";
 const db = firebase.firestore(firebaseApp);
 
-const Presupuesto = (props) => {
-  const [users, setUsers] = useState([]);
+const Presupuesto = () => {
+  const [isValidPresupuesto, setIsValidPresupuesto] = useState(false);
   const [usuario, setUsuario] = useState(null);
-  const user = firebase.auth().currentUser;
+  const [presupuesto, setPresupuesto] = useState(0);
+  const [gastos, setGastos] = useState([]);
+  const [modal, setModal] = useState(false);
+  const [gasto, setGasto] = useState({});
+  const [filtro, setFiltro] = useState("");
+  const [gastosFiltrados, setGastosFiltrados] = useState([]);
   useEffect(() => {
-    db.collection("presupuesto").onSnapshot((querySnapShot) => {
-      const users = [];
-      querySnapShot.docs.forEach((doc) => {
-        const {
-          nombre,
-          correo,
-          navegacion,
-          encabezado,
-          body,
-          footer,
-          basedatos,
-          framework,
-          hosting,
-          total,
-          creado,
-        } = doc.data();
-        /* la condicional es para que haga el filtrado de los presupuestos segun el usuario logueado (es lo que causa el bug sin sesion) */
-        if (user.email == correo) {
-          users.push({
-            id: doc.id,
-            nombre,
-            correo,
-            navegacion,
-            encabezado,
-            body,
-            footer,
-            basedatos,
-            framework,
-            hosting,
-            total,
-            creado,
-          });
+    const obtenerPresupuestoStorage = async () => {
+      try {
+        const presupuestoStorage =
+          (await AsyncStorage.getItem("planificador_presupuesto")) ?? 0;
+
+        if (presupuestoStorage > 0) {
+          setPresupuesto(presupuestoStorage);
+          setIsValidPresupuesto(true);
         }
-      });
-      setUsers(users);
-    });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    obtenerPresupuestoStorage();
   }, []);
 
   useEffect(() => {
-    firebase.auth().onAuthStateChanged((userInfo) => {
-      //si existe una sesión activa asignamos los datos de sesión al useState usuario
-      setUsuario(userInfo);
-    });
+    if (isValidPresupuesto) {
+      const guardarPresupuestoStorage = async () => {
+        try {
+          await AsyncStorage.setItem("planificador_presupuesto", presupuesto);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      guardarPresupuestoStorage();
+    }
+  }, [isValidPresupuesto]);
+
+  useEffect(() => {
+    const obtenerGastosStorage = async () => {
+      try {
+        const gastosStorage = await AsyncStorage.getItem("planificador_gastos");
+
+        setGastos(gastosStorage ? JSON.parse(gastosStorage) : []);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    obtenerGastosStorage();
   }, []);
+
+  useEffect(() => {
+    const guardarGastosStorage = async () => {
+      try {
+        await AsyncStorage.setItem(
+          "planificador_gastos",
+          JSON.stringify(gastos)
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    guardarGastosStorage();
+  }, [gastos]);
+
+  const handleNuevoPresupuesto = (presupuesto) => {
+    if (Number(presupuesto) > 0) {
+      setIsValidPresupuesto(true);
+    } else {
+      Alert.alert("Error", "El Presupuesto no puede ser 0 o menor");
+    }
+  };
+
+  const handleGasto = (gasto) => {
+    if ([gasto.nombre, gasto.categoria, gasto.cantidad].includes("")) {
+      Alert.alert("Error", "Todos los campos son obligatorios");
+      return;
+    }
+
+    if (gasto.id) {
+      const gastosActualizados = gastos.map((gastoState) =>
+        gastoState.id === gasto.id ? gasto : gastoState
+      );
+      setGastos(gastosActualizados);
+    } else {
+      // Añadir el nuevo gasto al state
+      gasto.id = generarId();
+      gasto.fecha = Date.now();
+      setGastos([...gastos, gasto]);
+    }
+    setModal(!modal);
+  };
+
+  const eliminarGasto = (id) => {
+    Alert.alert(
+      "¿Deseas eliminar este gasto?",
+      "Un gasto eliminado no se puede recuperar",
+      [
+        { text: "No", style: "cancel" },
+        {
+          text: "Si, Eliminar",
+          onPress: () => {
+            const gastosActualizados = gastos.filter(
+              (gastoState) => gastoState.id !== id
+            );
+
+            setGastos(gastosActualizados);
+            setModal(!modal);
+            setGasto({});
+          },
+        },
+      ]
+    );
+  };
+
+  const resetearApp = () => {
+    Alert.alert(
+      "Deseas resetear la app?",
+      "Esto eliminará presupuesto y gastos",
+      [
+        { text: "No", style: "cancel" },
+        {
+          text: "Si, Eliminar",
+          onPress: async () => {
+            try {
+              await AsyncStorage.clear();
+              setIsValidPresupuesto(false);
+              setPresupuesto(0);
+              setGastos([]);
+            } catch (error) {
+              console.log(error);
+            }
+          },
+        },
+      ]
+    );
+  };
 
   return (
-    <ScrollView style={styles.vista}>
-      {/*Colocaremos un botón de agregar nuevo presupuesto*/}
-      {usuario && (
-        <Button
-          title="Crea un presupuesto"
-          onPress={() => props.navigation.navigate("CreatePresupuesto")}
-        />
-      )}
-      {users.map((user) => {
-        return (
-          <ListItem
-            key={user.id}
-            bottomDivider
-            onPress={() => {
-              props.navigation.navigate("EditPresupuesto", {
-                userId: user.id,
-              });
-            }}
-          >
-            <ListItem.Chevron />
-            <Avatar
-              source={{
-                uri: "https://www.computerhope.com/jargon/d/doc.png",
-              }}
-              rounded
+    <View style={styles.contenedor}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+        <View style={styles.header}>
+          <Header />
+          {isValidPresupuesto ? (
+            <ControlPresupuesto
+              presupuesto={presupuesto}
+              gastos={gastos}
+              resetearApp={resetearApp}
             />
-            <ListItem.Content>
-              <ListItem.Title>{user.nombre}</ListItem.Title>
-              <ListItem.Subtitle>{user.correo}</ListItem.Subtitle>
-              <ListItem.Subtitle>
-                <Text>Costo de navegacion: </Text> {user.navegacion}
-              </ListItem.Subtitle>
-              <ListItem.Subtitle>
-                <Text>Costo de encabezado: </Text> {user.encabezado}
-              </ListItem.Subtitle>
-              <ListItem.Subtitle>
-                <Text>Costo de body: </Text> {user.body}
-              </ListItem.Subtitle>
-              <ListItem.Subtitle>
-                <Text>Costo de footer: </Text> {user.footer}
-              </ListItem.Subtitle>
-              <ListItem.Subtitle>
-                <Text>Costo de base de datos: </Text> {user.basedatos}
-              </ListItem.Subtitle>
-              <ListItem.Subtitle>
-                <Text>Costo de framework: </Text> {user.framework}
-              </ListItem.Subtitle>
-              <ListItem.Subtitle>
-                <Text>Costo de hosting (por mes): </Text> {user.hosting}
-              </ListItem.Subtitle>
-              <ListItem.Subtitle>
-                <Text>Costo Total: </Text> {user.total}
-              </ListItem.Subtitle>
-              <ListItem.Subtitle>
-                {user.creado.substring(0, 24)}
-              </ListItem.Subtitle>
-            </ListItem.Content>
-          </ListItem>
-        );
-      })}
-    </ScrollView>
+          ) : (
+            <NuevoPresupuesto
+              presupuesto={presupuesto}
+              setPresupuesto={setPresupuesto}
+              handleNuevoPresupuesto={handleNuevoPresupuesto}
+            />
+          )}
+        </View>
+        {isValidPresupuesto && (
+          <>
+            <Filtro
+              filtro={filtro}
+              setFiltro={setFiltro}
+              gastos={gastos}
+              setGastosFiltrados={setGastosFiltrados}
+            />
+
+            <ListadoGastos
+              gastos={gastos}
+              setModal={setModal}
+              setGasto={setGasto}
+              filtro={filtro}
+              gastosFiltrados={gastosFiltrados}
+            />
+          </>
+        )}
+      </ScrollView>
+
+      {modal && (
+        <Modal
+          animationType="slide"
+          visible={modal}
+          onRequestClose={() => {
+            setModal(!modal);
+          }}
+        >
+          <FormularioGasto
+            setModal={setModal}
+            handleGasto={handleGasto}
+            gasto={gasto}
+            setGasto={setGasto}
+            eliminarGasto={eliminarGasto}
+          />
+        </Modal>
+      )}
+
+      {isValidPresupuesto && (
+        <Pressable style={styles.pressable} onPress={() => setModal(!modal)}>
+          <Image
+            style={styles.imagen}
+            source={require("./img/nuevo-gasto.png")}
+          />
+        </Pressable>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  comentarios: {
-    marginTop: 10,
-    marginBottom: 10,
-    alignItems: "center",
-  },
-  body: {
+  contenedor: {
+    backgroundColor: "#F5F5F5",
     flex: 1,
-    backgroundColor: "white",
   },
-  viewSucursal: {
-    padding: 15,
+  header: {
+    backgroundColor: "#3B82F6",
+    minHeight: 400,
   },
-  nombre: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  descripcion: {
-    marginTop: 5,
-    color: "grey",
-  },
-  direccion: {
-    marginTop: 5,
-    color: "grey",
-  },
-  direccionTitulo: {
-    fontWeight: "bold",
-    marginTop: 5,
-    color: "grey",
-  },
-  rating: {
+  pressable: {
+    width: 60,
+    height: 60,
     position: "absolute",
-    right: 0,
-    marginTop: 40,
-    paddingRight: 20,
+    bottom: 40,
+    right: 30,
   },
-  listaInfo: {
-    borderBottomColor: "#D8D8D8",
-    borderBottomWidth: 1,
-  },
-  vista: {
-    flex: 1,
-    backgroundColor: "#FFFF",
-  },
-  btn: {
-    position: "absolute",
-    bottom: 10,
-    right: 10,
-    //Para IOS mostrará una sombra para el botón
-    shadowColor: "black",
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.5,
+  imagen: {
+    width: 60,
+    height: 60,
   },
 });
 
